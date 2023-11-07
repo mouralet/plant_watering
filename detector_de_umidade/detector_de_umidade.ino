@@ -18,11 +18,18 @@ int analogSoloMolhado = 150; //VALOR MEDIDO COM O SOLO MOLHADO (VOCÊ PODE FAZER
 int percSoloSeco = 0; //MENOR PERCENTUAL DO SOLO SECO (0% - NÃO ALTERAR)
 int percSoloMolhado = 100; //MAIOR PERCENTUAL DO SOLO MOLHADO (100% - NÃO ALTERAR)
 
+const int pinoSensorAgua = A1; //PINO ANALÓGICO UTILIZADO PELO SENSOR
+
+int valorAgua;
+int valorAguaPerc;
+
 void setup(){
   Serial.begin(9600); //INICIALIZA A SERIAL
   lcd.begin (16,2); //SETA A QUANTIDADE DE COLUNAS(16) E O NÚMERO DE LINHAS(2) DO DISPLAY
   lcd.setBacklight(HIGH); //LIGA O BACKLIGHT (LUZ DE FUNDO)
   Serial1.begin(9600); //INICIALIZA A SERIAL PARA O ESP8266
+  pinMode(pinoSensor, INPUT); //DEFINE O PINO COMO ENTRADA
+
   delay(2000); //INTERVALO DE 2 SEGUNDO ANTES DE INICIAR
 }
 void loop(){
@@ -40,8 +47,24 @@ void loop(){
   Serial.println("%"); //IMPRIME O CARACTERE NO MONITOR SERIAL
   lcd.setCursor(8,0); //SETA A POSIÇÃO DO CURSOR
   lcd.print("Solo:" + String(valorLido) +"%");
-
+  
+  valorAgua = analogRead(pinoSensorAgua);
+  valorAguaPerc = ( valorAgua * 100 ) / 800;
+  if(valorAgua > 500){ //SE A LEITURA DO PINO FOR MAIOR QUE 690 BITS (PODE SER AJUSTADO), FAZ
+    Serial.print("Nível d'agua alto: "); //IMPRIME O TEXTO NO MONITOR SERIAL
+    Serial.print(valorAguaPerc); //IMPRIME NO MONITOR SERIAL O PERCENTUAL DE UMIDADE DO SOLO
+    Serial.print("%");
+    Serial.print ("\n");
+    Serial.print("Nível d'agua alto: ");
+    Serial.print(valorAgua);
+  }else{ //SENÃO, FAZ
+    Serial.print("Nível d'agua baixo: "); //IMPRIME O TEXTO NO MONITOR SERIAL
+    Serial.print(valorAguaPerc); //IMPRIME NO MONITOR SERIAL O PERCENTUAL DE UMIDADE DO SOLO
+    Serial.print("%");
+    Serial.print ("\n");
+    Serial.print("Nível d'agua baixo: ");
+    Serial.print(valorAgua);
+  }
+  Serial.print ("\n");
   delay(2000); //INTERVALO DE 2 SEGUNDOS * NÃO DIMINUIR ESSE VALOR
 }
-
-
